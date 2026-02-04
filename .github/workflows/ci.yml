@@ -7,15 +7,28 @@ on:
       - dev
 
 jobs:
-  build:
+  build_and_test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
 
-      - name: Run HTML build check
-        run: echo "HTML project build successful"
+      - name: Build stage - validate HTML files
+        run: |
+          echo "Checking for index.html file"
+          if [ ! -f index.html ]; then
+            echo "Error: index.html not found!"
+            exit 1
+          fi
+          echo "Build stage passed: index.html found"
 
-      - name: Run basic tests
-        run: echo "Basic tests passed successfully"
+      - name: Test stage - basic content check
+        run: |
+          echo "Testing if HTML contains expected content"
+          if grep -q "<title>" index.html; then
+            echo "Test passed: <title> tag found"
+          else
+            echo "Test failed: <title> tag missing"
+            exit 1
+          fi
